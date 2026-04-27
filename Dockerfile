@@ -16,8 +16,9 @@ RUN npm prune --production
 FROM node:20-alpine AS production
 WORKDIR /app
 
-# Create non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Create non-root user and remove vulnerable global npm
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
+    rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
 # Copy only what's necessary, changing ownership
 COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
